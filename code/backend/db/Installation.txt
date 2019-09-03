@@ -1,0 +1,22 @@
+Installation von PostGIS (PostgreSQL)
+
+1.) Starten des DB-Servers in Docker
+
+docker run --name gisDB -e POSTGRES_PASSWORD=gis -p 7000:5432 --restart=always -d mdillon/postgis
+
+Hinweis: Nutzername = "postgres"; Passwort = "gis"; Port = 7000;
+
+2.) Datenbank anlegen
+
+Datenbank "gis" anlegen (z.B. mit psql)
+Unbedingt UTF-8 Encoding nutzen!
+
+3.) Einrichten der DB-Tabellen
+
+gis\backend\db\createTable.sql importieren (z.B. mit psql)
+Import über 'createTable.cmd' möglich (Windows)
+
+4.) Einspielen der Daten
+
+gis\backend\db\converted\all.sql importieren  (z.B. mit psql)
+Import über 'import.cmd' möglich (Windows)

@@ -1,0 +1,137 @@
+/*
+ *	 PopulationVisualisationGermany - The web GIS application "PopulationVisualisationGermany" visualises the changes in the distribution of the population in Germany over time.
+ *   Copyright (C) 2019 Björn Kremer und Thomas Rozanski
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+body {
+  font-family: "Roboto", sans-serif, arial;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+html,
+body,
+#map-canvas {
+  height: 100%;
+  width: 100vw;
+}
+
+#controls {
+  margin-left: 46px;
+  margin-top: 46px;
+  margin-right: 32px;
+}
+
+#radioButtonGroup {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+#slider {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  margin-right: 40px;
+  max-width: 500px;
+}
+
+#sliderDataYear {
+  width: 3em;
+  height: 1.6em;
+  top: 50%;
+  margin-top: -0.8em;
+  text-align: center;
+  line-height: 1.6em;
+}
+
+#sliderLabel {
+  margin-top: 24px;
+}
+
+#description {
+  margin-top: 30px;
+  max-width: 500px;
+}
+
+#startButton {
+  margin-right: 24px;
+}
+
+#square {
+  width: 20px;
+  height: 20px;
+  border: solid 1px black;
+  margin-bottom: 10px;
+  margin-right: 15px;
+}
+
+#legend {
+  margin: 15px;
+}
+
+label {
+  font-weight: normal !important;
+}
+
+.warnings {
+  margin-top: 12px;
+}
+
+.labeledRadioButton {
+  align-items: center;
+}
+
+.heatmap {
+  width: 100%;
+  height: 100%;
+}
+#myChart {
+  height:200px;
+}
+
+#menuWrapper {
+  z-index: 10000;
+  width: 400px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+  height: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
+}
+
+#container {
+  width: 400px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 50px;
+}
+
+#toggleMenuImg {
+  height: 40px;
+  background-color: white;
+  border: solid 1px black;
+  padding: 5px;
+  margin: 15px;
+  border-radius: 5px;
+}
+
+#toggleMenuWrapper {
+  z-index: 10002;
+  position: fixed;
+  top: 0;
+  left: 330px;
+}

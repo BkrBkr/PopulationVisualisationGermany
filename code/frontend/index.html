@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!--
+/*
+ *	 PopulationVisualisationGermany - The web GIS application "PopulationVisualisationGermany" visualises the changes in the distribution of the population in Germany over time.
+ *   Copyright (C) 2019 Björn Kremer und Thomas Rozanski
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+-->
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bevölkerungsverteilung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+
+    <script src="leaflet.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
+    <script src="heatmap.min.js"></script>
+    <script src="leaflet-heatmap.js"></script>
+    <script src="MapMaker.js"></script>
+    <script src="UIControl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+    <script>
+      //Initialisierungen
+      $(function() {
+        //Zu Beginn alle Controls deaktivieren
+        $("#container :input").attr("disabled", true);
+
+        //Klasse für die Kontrolle der Steuerelemente
+        var uiControl = new UIControl();
+
+        //Seite (Karte, Controls, etc) initialisieren
+        uiControl
+          .init()
+          .then(function(m) {
+            //Nach der Initialisierung Controls aktivieren
+            $("#container :input").attr("disabled", false);
+          })
+          .catch(function(e) {
+            //Fehlermeldungen ausgeben
+            console.log(e);
+            if (e instanceof ErrorNotReachable)
+              alert(
+                "Fehler: Ein Dienst ist nicht erreichbar. URL: " + e.getURL()
+              );
+            else if (e instanceof GETError)
+              alert(
+                "Fehler bei einer HTTP-Anfrage. Code: " +
+                  e.getCode() +
+                  " URL: " +
+                  e.getURL()
+              );
+            else alert("Unbekannter Fehler aufgetreten.");
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <!--HeatMap-->
+    <div class="heatmap" id="map-canvas"></div>
+
+    <!--Ein-/Ausblenden-Button-->
+    <div id="toggleMenuWrapper">
+      <a id="toggleMenu" href="#"
+        ><img id="toggleMenuImg" src="images/arrow-left.png" alt="show/hide"
+      /></a>
+    </div>
+
+    <!--Menü-->
+    <div id="menuWrapper">
+      <div id="container" class="container main-container">
+        <div class="row">
+          <div class="col">
+            <h1>Bevölkerungsverteilung in Deutschland</h1>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="row">
+              <div class="col">
+                <b>Ausgabevariante</b>
+                <div class="labeledRadioButton">
+                  <input
+                    type="radio"
+                    id="heatMap"
+                    class="viewSelection"
+                    name="viewSelection"
+                    checked
+                  />
+                  <label for="heatMap">Heatmap</label>
+                </div>
+                <div class="labeledRadioButton">
+                  <input
+                    type="radio"
+                    id="useAmountColor"
+                    class="viewSelection"
+                    name="viewSelection"
+                  />
+                  <label for="useAmountColor"
+                    >Einfärbung nach Bevölkerungsanteil</label
+                  >
+                </div>
+                <div class="labeledRadioButton">
+                  <input
+                    type="radio"
+                    id="useUnqiueColor"
+                    class="viewSelection"
+                    name="viewSelection"
+                  />
+                  <label for="useUnqiueColor">Eindeutige Einfärbung</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div id="radioButtonGroup">
+                  <b>Geschlecht</b>
+                  <form id="genderForm">
+                    <div class="labeledRadioButton">
+                      <input
+                        type="radio"
+                        id="allGenders"
+                        class="genderSelection"
+                        name="genderSelection"
+                        value="0"
+                        checked
+                      />
+                      <label for="allGenders">Alle</label>
+                    </div>
+                    <div class="labeledRadioButton">
+                      <input
+                        type="radio"
+                        id="men"
+                        class="genderSelection"
+                        name="genderSelection"
+                        value="1"
+                      />
+                      <label for="men">Männer</label>
+                    </div>
+                    <div class="labeledRadioButton">
+                      <input
+                        type="radio"
+                        id="women"
+                        class="genderSelection"
+                        name="genderSelection"
+                        value="2"
+                      />
+                      <label for="women">Frauen</label>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div id="sliderLabel">
+                  <b>Anzuzeigendes Jahr</b>
+                </div>
+                <div id="slider">
+                  <div
+                    id="sliderDataYear"
+                    class="ui-slider-handle slider"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="flexRow">
+                  <input
+                    id="startAnimationButton"
+                    class="btn btn-primary"
+                    type="button"
+                    value="Animation starten"
+                  />
+                  <input
+                    id="stopAnimationButton"
+                    class="btn btn-primary"
+                    style="display:none"
+                    type="button"
+                    value="Animation stoppen"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div id="radioButtonGroup">
+                  <div id="description">
+                    <b>Erklärung</b>
+                    <div id="descriptionHeatmap" style="display:none;">
+                      <b>Heatmap</b>
+                      Die Heatmap stellt die Einwohnerzahlen im aktuellen
+                      Kartenausschnitt dar:<br />
+                      <br />
+                      <div id="legend">
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #ffffff;"></div>
+                          </div>
+                          <div class="col">Keine Einwohner</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #afc3e3;"></div>
+                          </div>
+                          <div class="col">Wenig Einwohner</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #33f253;"></div>
+                          </div>
+                          <div class="col">Einige Einwohner</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #fafa00;"></div>
+                          </div>
+                          <div class="col">Viele Einwohner</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #fa2a00;"></div>
+                          </div>
+                          <div class="col">Die meisten Einwohner</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="descriptionColorAmount" style="display:none;">
+                      <b>Einfärbung nach Bevölkerungsanteil</b>
+                      Die Karte zeigt die Einwohner pro Bundesland, wobei jedes
+                      Bundesland entsprechend der Einwohnerzahlen gefärbt
+                      ist:<br />
+                      <div id="legend">
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #fa2a00;"></div>
+                          </div>
+                          <div class="col">Wenig Einwohner</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1">
+                            <div id="square" style="background: #33f253;"></div>
+                          </div>
+                          <div class="col">Viele Einwohner</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="descriptionColorUnique" style="display:none;">
+                      <b>Eindeutige Einfärbung</b>
+                      Die Karte zeigt die Einwohner pro Bundesland, wobei jedes
+                      Bundesland eine eigene eindeutige Farbe erhält:<br />
+                      Die Farbe ist mit der des Kreisdiagramms identisch.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="warnings alert alert-danger" role="alert">
+                  Daten die älter sind als 2009 können ungenau sein. Prognosen
+                  können ungenau sein.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
