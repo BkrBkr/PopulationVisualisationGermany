@@ -4,8 +4,10 @@ Deutschland leidet unter einem Phänomen, das langläufig als „Landflucht“ b
 # Zielsetzung 
 Das Ziel dieses Projekts ist es, die Bevölkerungsverteilung in Deutschland auf einer Landkarte in Form einer Webanwendung zu visualisieren. Primär soll die Visualisierung mit Hilfe einer Heatmap erfolgen, die es ermöglicht Bevölkerungshotspots besonders anschaulich darzustellen. In Verbindung mit einem Slider, soll der schnelle Wechsel zwischen verschiedenen Jahren ermöglicht werden, um so die sich ändernde Verteilung zu veranschaulichen. Neben der Heatmap-Darstellung sollen weitere Darstellungsmöglichkeiten geboten werden, wie die Darstellung der Bevölkerung pro Bundesland mit Einfärbung nach Bevölkerungsdichte und die Darstellung der Bevölkerungsdichte pro Bundesland mit klar zu unterscheidender Einfärbung der Bundesländer. Alle weiteren Anforderungen sind der untenstehenden Auflistung zu entnehmen.
 
-# Installation
+# Screenshots
+![Screenshot Heatmap](https://raw.githubusercontent.com/BkrBkr/PopulationVisualisationGermany/master/screenshots/heatmap.png)
 
+# Installation
 
 ## Voraussetzungen
 * Docker ist installiert
